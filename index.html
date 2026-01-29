@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NOVA GAME STORE | Heartopia</title>
+  <style>
+    body { margin: 0; font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #ff9ad5, #c77dff); color: #333; }
+    .container { max-width: 450px; margin: auto; padding: 20px; }
+    header { text-align: center; color: #fff; padding: 20px; }
+    .card { background: #fff; border-radius: 20px; padding: 25px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+    h2 { color: #b1007a; font-size: 1.1rem; margin-top: 0; display: flex; align-items: center; gap: 8px; }
+    
+    input, select { width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px; border: 2px solid #f0f0f0; font-size: 16px; transition: 0.3s; box-sizing: border-box; }
+    input:focus, select:focus { border-color: #ff4da6; outline: none; }
+
+    /* File Upload Styling */
+    .file-input-label { display: block; background: #fff0f9; border: 2px dashed #ff9ad5; padding: 15px; border-radius: 12px; text-align: center; cursor: pointer; color: #b1007a; margin-top: 10px; font-weight: 500; }
+    #slip-upload { display: none; }
+
+    #price-display { background: #fff0f9; padding: 15px; border-radius: 12px; text-align: center; color: #b1007a; font-weight: bold; margin: 10px 0; display: none; border: 1px solid #ff9ad5; }
+    
+    .payment-info { background: #f8f9fa; padding: 15px; border-radius: 15px; border: 1px solid #eee; text-align: center; }
+    .kpay-text { font-size: 1.2rem; font-weight: bold; color: #003399; margin: 5px 0; }
+    .name-text { font-size: 1rem; color: #b1007a; font-weight: 600; }
+    
+    .copy-btn { background: #003399; color: white; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; margin-top: 10px; font-size: 14px; }
+    .btn { display: block; background: #ff4da6; color: #fff; padding: 18px; border-radius: 50px; text-decoration: none; font-weight: bold; text-align: center; margin-top: 15px; font-size: 1.1rem; transition: 0.3s; box-shadow: 0 5px 15px rgba(255, 77, 166, 0.4); }
+    .btn:hover { background: #e6007e; transform: translateY(-2px); }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>NOVA GAME STORE</h1>
+  <p>Heartopia Top-Up Service</p>
+</header>
+
+<div class="container">
+  <div class="card">
+    <h2>🎮 1. Game Details</h2>
+    <input type="text" id="player-id" placeholder="Enter Player ID">
+    
+    <select id="server-select">
+      <option value="">Select Server</option>
+      <option value="SEA">SEA</option>
+      <option value="Asia">Asia</option>
+      <option value="Global">Global</option>
+      <option value="America">America</option>
+      <option value="TW,HK,MO">TW,HK,MO</option>
+    </select>
+
+    <select id="package-select">
+      <option value="">Select Package</option>
+      <option value="20 Heart" data-price="2,500">20 Heart — 2,500 Ks</option>
+      <option value="60 Heart" data-price="5,000">60 Heart — 5,000 Ks</option>
+      <option value="320 Heart" data-price="24,000">320 Heart — 24,000 Ks</option>
+      <option value="730 Heart" data-price="54,500">730 Heart — 54,500 Ks</option>
+      <option value="1370 Heart" data-price="97,000">1370 Heart — 97,000 Ks</option>
+      <option value="2130 Heart" data-price="145,000">2130 Heart — 145,000 Ks</option>
+      <option value="3550 Heart" data-price="242,000">3550 Heart — 242,000 Ks</option>
+      <option value="7050 Heart" data-price="464,000">7050 Heart — 464,000 Ks</option>
+      <option value="Junior Membership" data-price="3,000">Junior Membership — 3,000 Ks</option>
+      <option value="Formal Membership" data-price="14,500">Formal Membership — 14,500 Ks</option>
+    </select>
+    <div id="price-display"></div>
+  </div>
+
+  <div class="card">
+    <h2>💰 2. Payment Info</h2>
+    <div class="payment-info">
+      <div>Kpay Number</div>
+      <div class="kpay-text" id="kpay-num">09754435866</div>
+      <div class="name-text">Name: Ma Ei Ei Phyo</div>
+      <button class="copy-btn" onclick="copyNum()">Copy Number</button>
+    </div>
+    
+    <label for="slip-upload" class="file-input-label" id="file-label">
+      📸 ငွေလွှဲပြေစာ (Slip) ရွေးရန်
+    </label>
+    <input type="file" id="slip-upload" accept="image/*" onchange="updateFileName()">
+  </div>
+
+  <a href="javascript:void(0)" class="btn" onclick="sendToTelegram()">
+    Confirm & Order via Telegram
+  </a>
+</div>
+
+<script>
+  const packageSelect = document.getElementById('package-select');
+  const display = document.getElementById('price-display');
+
+  packageSelect.onchange = function() {
+    const price = this.options[this.selectedIndex].getAttribute('data-price');
+    if(price) {
+      display.style.display = 'block';
+      display.innerHTML = `Total Amount: ${price} Ks`;
+    } else {
+      display.style.display = 'none';
+    }
+  };
+
+  function updateFileName() {
+    const fileInput = document.getElementById('slip-upload');
+    const label = document.getElementById('file-label');
+    if (fileInput.files.length > 0) {
+      label.innerHTML = "✅ Slip ရွေးပြီးပါပြီ - " + fileInput.files[0].name;
+      label.style.background = "#e8f5e9";
+      label.style.borderColor = "#4caf50";
+      label.style.color = "#2e7d32";
+    }
+  }
+
+  function copyNum() {
+    navigator.clipboard.writeText('09754435866');
+    alert("KPay နံပါတ်ကို Copy ကူးလိုက်ပါပြီ");
+  }
+
+  function sendToTelegram() {
+    const id = document.getElementById('player-id').value;
+    const server = document.getElementById('server-select').value;
+    const pack = document.getElementById('package-select').value;
+    const price = packageSelect.options[packageSelect.selectedIndex].getAttribute('data-price');
+    const slip = document.getElementById('slip-upload').files[0];
+    
+    if(!id || !server || !pack) {
+      alert("ID၊ Server နှင့် Package တို့ကို အကုန်ဖြည့်ပါ");
+      return;
+    }
+
+    if(!slip) {
+      alert("ကျေးဇူးပြု၍ ငွေလွှဲပြေစာ (Slip) ပုံကို အရင်ရွေးချယ်ပေးပါ");
+      return;
+    }
+
+    const message = `[ NOVA GAME STORE ]%0AOrder တင်ချင်လို့ပါ%0A--------------------%0A🆔 Player ID: ${id}%0A🌐 Server: ${server}%0A💎 Package: ${pack}%0A💰 Amount: ${price} Ks%0A--------------------%0A(မှတ်ချက်- ငွေလွှဲပြေစာကို အောက်တွင် ပူးတွဲပို့ပေးပါမည်။)`;
+    
+    // Telegram ကို သွားရန်
+    alert("Telegram သို့ရောက်လျှင် ရွေးထားသော Slip ပုံကိုပါ ပူးတွဲပို့ပေးပါရန် မမေ့ပါနှင့်။");
+    window.open(`https://t.me/Spotlightagency1?text=${message}`, '_blank');
+  }
+</script>
+
+</body>
+</html>
